@@ -16,9 +16,10 @@ namespace BriveDavinez.CQRS.Commands
 
         public string CodigoDeBarras { get; set; }
 
+
         public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, int>
         {
-            private BriveDavinezContext _context;
+            private readonly BriveDavinezContext _context;
 
             public CreateProductCommandHandler(BriveDavinezContext context)
             {
@@ -27,17 +28,19 @@ namespace BriveDavinez.CQRS.Commands
 
             public async Task<int> Handle(CreateProductCommand command, CancellationToken cancellationToken)
             {
-                var producto = new Producto();
-                producto.Descripcion = command.Descripcion;
-                producto.Nombre = command.Nombre;
-                producto.Marca = command.Marca;
-                producto.CodigoDeBarras = command.CodigoDeBarras;
+                var producto = new Producto
+                {
+                    Descripcion = command.Descripcion,
+                    Nombre = command.Nombre,
+                    Marca = command.Marca,
+                    CodigoDeBarras = command.CodigoDeBarras
+                };
 
                 _context.Producto.Add(producto);
                 await _context.SaveChangesAsync();
 
                 // El tipo de dato retornado debera ser igual al declarado en la interface IRequestHandler
-                return producto.Id;
+                return producto.ProductoID;
             }
         }
     }
