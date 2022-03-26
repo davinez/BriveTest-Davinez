@@ -1,4 +1,4 @@
-using BriveDavinez.Context;
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BriveDavinez
+namespace WebAPI
 {
     public class Startup
     {
@@ -29,11 +29,17 @@ namespace BriveDavinez
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMediatR(typeof(Startup));
-            services.AddDbContext<BriveDavinezContext>(options =>
+            // MediatR *Referencia a Dependencia
+            var assembly = AppDomain.CurrentDomain.Load("Application");
+            services.AddMediatR(assembly);
+
+            // Conexion DB
+            services.AddDbContext<ApplicationContext>(options =>
         options.UseSqlServer(Configuration.GetConnectionString("ACMEDB")));
+
             services.AddControllers();
 
+            // Swagger
             AddSwagger(services);
         }
 
@@ -72,6 +78,7 @@ namespace BriveDavinez
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Foo API V1");
+                c.RoutePrefix = "docs";
             });
 
             app.UseRouting();

@@ -1,20 +1,20 @@
-﻿using BriveDavinez.Context;
-using BriveDavinez.Models;
+﻿using Domain.Entities;
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BriveDavinez.CQRS.Queries
+namespace Application.Queries
 {
     public class GetAllProductsQuery : IRequest<IEnumerable<Producto>>
     {
         public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, IEnumerable<Producto>>
         {
-            private readonly BriveDavinezContext _context;
+            private readonly ApplicationContext _context;
 
-            public GetAllProductsQueryHandler(BriveDavinezContext context)
+            public GetAllProductsQueryHandler(ApplicationContext context)
             {
                 _context = context;
             }

@@ -1,11 +1,11 @@
-﻿using BriveDavinez.CQRS.Commands;
-using BriveDavinez.CQRS.Queries;
+﻿using Application.Commands;
+using Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace BriveDavinez.Controllers
+namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -16,6 +16,7 @@ namespace BriveDavinez.Controllers
         public ProductController(IMediator mediator)
         {
             _mediator = mediator;
+
         }
 
         [HttpPost]
@@ -34,6 +35,23 @@ namespace BriveDavinez.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             return Ok(await _mediator.Send(new GetProductByIdQuery { ProductoID = id }));
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, UpdateProductCommand command)
+        {
+            command.Id = id;
+
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // Envio de notificaciones cuando producto ya no este disponible
+            await _mediator.Publish(new Application.Notifications.DeleteProductNotification { ProductoID = id });
+
+            return Ok(await _mediator.Send(new DeleteProductByIdCommand { ProductoID = id }));
         }
     }
 }

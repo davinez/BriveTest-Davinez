@@ -1,10 +1,10 @@
-﻿using BriveDavinez.Context;
-using BriveDavinez.Models;
+﻿using Domain.Entities;
+using Infrastructure.Persistence;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BriveDavinez.CQRS.Commands
+namespace Application.Commands
 {
     public class CreateProductCommand : IRequest<int>
     {
@@ -19,9 +19,9 @@ namespace BriveDavinez.CQRS.Commands
 
         public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, int>
         {
-            private readonly BriveDavinezContext _context;
+            private readonly ApplicationContext _context;
 
-            public CreateProductCommandHandler(BriveDavinezContext context)
+            public CreateProductCommandHandler(ApplicationContext context)
             {
                 _context = context;
             }

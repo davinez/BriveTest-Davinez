@@ -1,17 +1,24 @@
-﻿using BriveDavinez.Models;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BriveDavinez.Context
+namespace Infrastructure.Persistence
 {
-    public class BriveDavinezContext : DbContext
+    public class ApplicationContext : DbContext
     {
-        public BriveDavinezContext(DbContextOptions<BriveDavinezContext> options) : base(options)
+        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
         }
 
         public DbSet<Producto> Producto { get; set; }
+
+        public DbSet<Sucursal> Sucursal { get; set; }
+
+        public DbSet<Stock> Stock { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -20,6 +27,13 @@ namespace BriveDavinez.Context
             // Filtra registros que tengan un soft delete           
             builder.Entity<Producto>().Property<bool>("Activo");
             builder.Entity<Producto>().HasQueryFilter(m => EF.Property<bool>(m, "Activo") == true);
+
+            builder.Entity<Sucursal>().Property<bool>("Activo");
+            builder.Entity<Sucursal>().HasQueryFilter(m => EF.Property<bool>(m, "Activo") == true);
+
+            builder.Entity<Stock>().Property<bool>("Activo");
+            builder.Entity<Stock>().HasQueryFilter(m => EF.Property<bool>(m, "Activo") == true)
+                .HasKey(a => new { a.SucursalID, a.ProductoID });
 
             // Si se requiere acceder a registros con soft delete, utilizar IgnoreQueryFilters
         }
