@@ -37,7 +37,7 @@ namespace Application.Queries
                                               Precio = stock.Precio,
                                           }).ToListAsync();
 
-                // El tipo de dato retornado debera ser igual al declarado en la interface IRequestHandler
+                // El tipo de dato retornado debera ser igual al declarado en la interface IRequest
                 return stockOfProductList;
             }
         }

@@ -22,7 +22,7 @@ namespace Application.Queries
             {
                 var productList = await _context.Producto.ToListAsync();
 
-                // El tipo de dato retornado debera ser igual al declarado en la interface IRequestHandler
+                // El tipo de dato retornado debera ser igual al declarado en la interface IRequest
                 return productList;
             }
         }

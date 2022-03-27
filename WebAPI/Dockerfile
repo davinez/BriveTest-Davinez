@@ -7,8 +7,9 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /app 
+
 #
-# copy csproj and restore as distinct layers
+# copy csproj 
 COPY *.sln .
 COPY WebAPI/*.csproj ./WebAPI/
 COPY Application/*.csproj ./Application/
@@ -17,7 +18,7 @@ COPY Domain/*.csproj ./Domain/
 #
 RUN dotnet restore ./WebAPI/WebAPI.csproj
 #
-# copy everything else and build app
+# copy el contenido restante
 COPY WebAPI/. ./WebAPI/
 COPY Application/. ./Application/
 COPY Infrastructure/. ./Infrastructure/

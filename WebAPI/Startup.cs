@@ -1,3 +1,4 @@
+using Infrastructure.HttpClients;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -10,9 +11,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Polly;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace WebAPI
@@ -41,26 +46,44 @@ namespace WebAPI
 
             // Swagger
             AddSwagger(services);
+
+            // Servicio de empresa ACME para envio de emails y sms
+            // Politica de retry como patron de resiliencia
+            var acmeClientSettings = new AcmeClientSettings();
+            Configuration.GetSection("AcmeClientSettings").Bind(acmeClientSettings);
+            services.AddSingleton(acmeClientSettings);
+            services.AddHttpClient<IAcmeClient, AcmeClient>()
+                .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
+                 {
+                  TimeSpan.FromSeconds(2),
+                  TimeSpan.FromSeconds(6),
+                  TimeSpan.FromSeconds(10)
+                 }));
+
         }
 
+        // Swagger Middleware
         private void AddSwagger(IServiceCollection services)
         {
             services.AddSwaggerGen(options =>
             {
-                var groupName = "v1";
-
-                options.SwaggerDoc(groupName, new OpenApiInfo
+                options.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = $"Foo {groupName}",
-                    Version = groupName,
-                    Description = "Foo API",
+                    Title = $"ACME API",
+                    Version = "v1",
+                    Description = "API para gestion de inventario",
                     Contact = new OpenApiContact
                     {
-                        Name = "Foo Company",
+                        Name = "ACME Company",
                         Email = string.Empty,
-                        Url = new Uri("https://foo.com/"),
+                        Url = new Uri("https://acme.com/"),
                     }
                 });
+
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
             });
         }
 
@@ -74,13 +97,6 @@ namespace WebAPI
 
             app.UseHttpsRedirection();
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Foo API V1");
-                c.RoutePrefix = "docs";
-            });
-
             app.UseRouting();
 
             app.UseAuthorization();
@@ -88,6 +104,13 @@ namespace WebAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ACME API V1");
+                c.RoutePrefix = "docs";
             });
         }
     }

@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    
     [ApiController]
+    [Route("api/[controller]/[action]")]
     public class SucursalController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -19,12 +20,18 @@ namespace WebAPI.Controllers
 
         }
 
+        /// <summary>
+        /// Agrega registro de una sucursal.
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> Create(CreateSucursalCommand command)
         {
             return Ok(await _mediator.Send(command));
         }
 
+        /// <summary>
+        /// Consulta de sucursal en base a su id.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {

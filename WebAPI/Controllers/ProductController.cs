@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]/[action]")]
     public class ProductController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -19,24 +19,36 @@ namespace WebAPI.Controllers
 
         }
 
+        /// <summary>
+        /// Agrega registro de producto.
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> Create(CreateProductCommand command)
         {
             return Ok(await _mediator.Send(command));
         }
 
+        /// <summary>
+        /// Consulta de todos los productos existentes.
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _mediator.Send(new GetAllProductsQuery()));
         }
 
+        /// <summary>
+        /// Consulta de producto en base a su id.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             return Ok(await _mediator.Send(new GetProductByIdQuery { ProductoID = id }));
         }
 
+        /// <summary>
+        /// Actualizar registro de producto.
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateProductCommand command)
         {
@@ -45,6 +57,9 @@ namespace WebAPI.Controllers
             return Ok(await _mediator.Send(command));
         }
 
+        /// <summary>
+        /// Borrado logico de producto.
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

@@ -36,7 +36,7 @@ namespace Application.Commands
                 _context.Sucursal.Add(sucursal);
                 await _context.SaveChangesAsync();
 
-                // El tipo de dato retornado debera ser igual al declarado en la interface IRequestHandler
+                // El tipo de dato retornado debera ser igual al declarado en la interface IRequest
                 return sucursal.SucursalID;
             }
         }

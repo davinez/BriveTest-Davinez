@@ -25,7 +25,7 @@ namespace Application.Queries
             {
                 var product = await _context.Producto.Where(a => a.ProductoID == query.ProductoID).FirstOrDefaultAsync();
 
-                // El tipo de dato retornado debera ser igual al declarado en la interface IRequestHandler
+                // El tipo de dato retornado debera ser igual al declarado en la interface IRequest
                 return product;
             }
         }
